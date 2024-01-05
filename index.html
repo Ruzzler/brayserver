@@ -35,6 +35,21 @@
         .status-down {
             color: red;
         }
+
+        #loading-spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -43,23 +58,25 @@
     
     <div id="status-container">
         <p id="status-text">Checking...</p>
+        <div id="loading-spinner"></div>
     </div>
 
     <script>
         function checkStatus() {
             var statusContainer = document.getElementById("status-container");
             var statusText = document.getElementById("status-text");
+            var loadingSpinner = document.getElementById("loading-spinner");
 
             statusText.textContent = "Checking...";
+            loadingSpinner.style.display = "block";
 
-            // Using another CORS proxy as an alternative
-            var proxyUrl = 'https://api.allorigins.win/get?url=';
+            // Using a proxy to avoid CORS issues
+            var proxyUrl = 'https://cors-anywhere.herokuapp.com/';
             var targetUrl = 'https://www.brayserver.com';
 
-            fetch(proxyUrl + encodeURIComponent(targetUrl))
-                .then(response => response.json())
-                .then(data => {
-                    if (data.contents) {
+            fetch(proxyUrl + targetUrl)
+                .then(response => {
+                    if (response.ok) {
                         statusContainer.className = "status-ok";
                         statusText.textContent = "BrayServer is UP!";
                     } else {
@@ -70,6 +87,9 @@
                 .catch(error => {
                     statusContainer.className = "status-down";
                     statusText.textContent = "Error checking the status.";
+                })
+                .finally(() => {
+                    loadingSpinner.style.display = "none";
                 });
         }
 
