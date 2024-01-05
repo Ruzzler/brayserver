@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrayServer Status Checker</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        .status-ok {
+            color: green;
+        }
+
+        .status-down {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>BrayServer Status Checker</h1>
+    
+    <div id="status-container">
+        <p id="status-text">Checking...</p>
+    </div>
+
+    <script>
+        function checkStatus() {
+            var statusContainer = document.getElementById("status-container");
+            var statusText = document.getElementById("status-text");
+
+            statusText.textContent = "Checking...";
+
+            // Using another CORS proxy as an alternative
+            var proxyUrl = 'https://api.allorigins.win/get?url=';
+            var targetUrl = 'https://www.brayserver.com';
+
+            fetch(proxyUrl + encodeURIComponent(targetUrl))
+                .then(response => response.json())
+                .then(data => {
+                    if (data.contents) {
+                        statusContainer.className = "status-ok";
+                        statusText.textContent = "BrayServer is UP!";
+                    } else {
+                        statusContainer.className = "status-down";
+                        statusText.textContent = "BrayServer is DOWN!";
+                    }
+                })
+                .catch(error => {
+                    statusContainer.className = "status-down";
+                    statusText.textContent = "Error checking the status.";
+                });
+        }
+
+        // Check the status when the page loads
+        window.onload = checkStatus;
+    </script>
+
+</body>
+</html>
